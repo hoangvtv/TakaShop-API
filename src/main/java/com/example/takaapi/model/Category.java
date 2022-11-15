@@ -16,7 +16,6 @@ public class Category {
     private int categoryId;
 
     @Column
-    @Min(value = 6, message = "Name must be more than 6 characters")
     private String name;
 
 //    @Column

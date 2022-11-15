@@ -9,6 +9,7 @@ import com.example.takaapi.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.ConstraintViolation;
@@ -29,6 +30,7 @@ public class CategoryController {
     CategoryService categoryService;
 
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping(value = "/create")
     public ResponseEntity<ApiResponse> createCategory(@RequestBody CategoryDto categoryDto)  {
 
@@ -56,6 +58,7 @@ public class CategoryController {
         return new ResponseEntity<>(categoryService.getListCategory(), HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/edit/{id}")
     public ResponseEntity<ApiResponse> editCategory(@PathParam("id") int id, @RequestBody CategoryDto categoryDto) throws IOException {
 
@@ -68,6 +71,8 @@ public class CategoryController {
         return new ResponseEntity<>(new ApiResponse(true, "Category has been updated successfully"), HttpStatus.OK);
     }
 
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<ApiResponse> deleteCategory(@PathParam("id") int id) {
         if (!categoryService.findById(id)) {

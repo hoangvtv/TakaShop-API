@@ -11,6 +11,7 @@ import com.example.takaapi.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -27,6 +28,8 @@ public class ProductController {
     @Autowired
     CategoryRepository categoryRepository;
 
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/create")
     public ResponseEntity<ApiResponse> createProduct(@RequestBody ProductDto productDto) throws IOException {
         Optional<Category> optionalCategory = categoryRepository.findById(productDto.getCategoryId());
@@ -43,6 +46,7 @@ public class ProductController {
     }
 
     // create an api to edit the product
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/update/{productId}")
     public ResponseEntity<ApiResponse> updateProduct(@PathVariable("productId") Integer productId, @RequestBody ProductDto productRequest) throws Exception {
         Optional<Category> optionalCategory = categoryRepository.findById(productRequest.getCategoryId());
