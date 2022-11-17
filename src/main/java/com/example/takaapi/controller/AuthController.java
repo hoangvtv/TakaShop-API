@@ -78,6 +78,14 @@ public class AuthController {
                     HttpStatus.BAD_REQUEST);
         }
 
+
+        if (!signUpRequest.getPassword().matches("^(?:(?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).*).{8}$")) {
+
+            return new ResponseEntity(new ApiResponse(false, "Password must have at least: 1 Lowercase," +
+                    " 1 Uppercase, and Digits!"),
+                    HttpStatus.BAD_REQUEST);
+        }
+
         // Creating user's account
         User user = new User(signUpRequest.getName(), signUpRequest.getUsername(),
                 signUpRequest.getEmail(), signUpRequest.getPassword());

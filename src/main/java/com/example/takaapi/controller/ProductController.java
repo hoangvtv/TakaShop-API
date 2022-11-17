@@ -32,6 +32,8 @@ public class ProductController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/create")
     public ResponseEntity<ApiResponse> createProduct(@RequestBody ProductDto productDto) throws IOException {
+
+        System.out.println(productDto.getImageURL());
         Optional<Category> optionalCategory = categoryRepository.findById(productDto.getCategoryId());
         if (optionalCategory.isEmpty()) {
             return new ResponseEntity<>(new ApiResponse(false, "Category does not exists"), HttpStatus.NOT_FOUND);

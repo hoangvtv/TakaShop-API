@@ -23,11 +23,6 @@ public class ProductDto {
 
     private @NotNull int categoryId;
 
-
-
-
-
-
     public int getProductId() {
         return productId;
     }
