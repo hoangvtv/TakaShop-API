@@ -1,9 +1,7 @@
 package com.example.takaapi.controller;
 
 
-
 import com.example.takaapi.common.ApiResponse;
-import com.example.takaapi.dto.ProductDto;
 import com.example.takaapi.model.Category;
 import com.example.takaapi.model.Product;
 import com.example.takaapi.repository.CategoryRepository;
@@ -13,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
@@ -31,14 +30,17 @@ public class ProductController {
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/create")
-    public ResponseEntity<ApiResponse> createProduct(@RequestBody ProductDto productDto) throws IOException {
+//    public ResponseEntity<ApiResponse> createProduct(@RequestBody ProductDto productDto) throws IOException {
+    public ResponseEntity<ApiResponse> createProduct(@RequestParam String name, @RequestParam double price,
+                                                     @RequestParam String description, @RequestParam MultipartFile imageURL,
+                                                     @RequestParam int categoryId) throws IOException {
 
-        System.out.println(productDto.getImageURL());
-        Optional<Category> optionalCategory = categoryRepository.findById(productDto.getCategoryId());
+
+        Optional<Category> optionalCategory = categoryRepository.findById(categoryId);
         if (optionalCategory.isEmpty()) {
             return new ResponseEntity<>(new ApiResponse(false, "Category does not exists"), HttpStatus.NOT_FOUND);
         }
-        productService.createProduct(productDto, optionalCategory.get());
+        productService.createProduct(name, price, description, imageURL, optionalCategory.get());
         return new ResponseEntity<>(new ApiResponse(true, "Product has been added"), HttpStatus.CREATED);
     }
 
@@ -50,8 +52,10 @@ public class ProductController {
     // create an api to edit the product
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/update/{productId}")
-    public ResponseEntity<ApiResponse> updateProduct(@PathVariable("productId") Integer productId, @RequestBody ProductDto productRequest) throws Exception {
-        Optional<Category> optionalCategory = categoryRepository.findById(productRequest.getCategoryId());
+    public ResponseEntity<ApiResponse> updateProduct(@PathVariable("productId") Integer productId, @RequestParam String name, @RequestParam double price,
+                                                     @RequestParam String description, @RequestParam MultipartFile imageURL,
+                                                     @RequestParam int categoryId) throws Exception {
+        Optional<Category> optionalCategory = categoryRepository.findById(categoryId);
         if (optionalCategory.isEmpty()) {
             return new ResponseEntity<>(new ApiResponse(false, "Category does not exists"), HttpStatus.NOT_FOUND);
         }
@@ -61,7 +65,7 @@ public class ProductController {
             return new ResponseEntity<>(new ApiResponse(false, "Product does not exists"), HttpStatus.NOT_FOUND);
         }
 
-        productService.updateProduct(productRequest, productId);
+        productService.updateProduct(name, price, description, imageURL, optionalCategory.get(), productId);
         return new ResponseEntity<>(new ApiResponse(true, "Product has been updated"), HttpStatus.OK);
     }
 

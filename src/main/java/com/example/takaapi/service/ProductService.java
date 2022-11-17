@@ -1,14 +1,13 @@
 package com.example.takaapi.service;
 
 
-
-import com.example.takaapi.dto.ProductDto;
 import com.example.takaapi.exception.ProductNotExistsException;
 import com.example.takaapi.model.Category;
 import com.example.takaapi.model.Product;
 import com.example.takaapi.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -29,22 +28,22 @@ public class ProductService {
     Path imagePath = Paths.get("images");
 
 
-    public void createProduct(ProductDto productDto, Category category) throws IOException {
+    public void createProduct(String name, double price, String description, MultipartFile imageURL, Category category) throws IOException {
         if (!Files.exists(CURRENT_FOLDER.resolve(staticPath).resolve(imagePath))) {
             Files.createDirectories(CURRENT_FOLDER.resolve(staticPath).resolve(imagePath));
         }
         Path file = CURRENT_FOLDER.resolve(staticPath)
-                .resolve(imagePath).resolve(productDto.getImageURL().getOriginalFilename());
+                .resolve(imagePath).resolve(imageURL.getOriginalFilename());
         try (OutputStream os = Files.newOutputStream(file)) {
-            os.write(productDto.getImageURL().getBytes());
+            os.write(imageURL.getBytes());
         }
 
         Product product = new Product();
-        product.setDescription(productDto.getDescription());
-        product.setName(productDto.getName());
-        product.setImageURL(imagePath.resolve(productDto.getImageURL().getOriginalFilename()).toString());
+        product.setDescription(description);
+        product.setName(name);
+        product.setImageURL(imagePath.resolve(imageURL.getOriginalFilename()).toString());
         product.setCategoryId(category);
-        product.setPrice(productDto.getPrice());
+        product.setPrice(price);
         productRepository.save(product);
     }
 
@@ -52,22 +51,23 @@ public class ProductService {
         return productRepository.findAll();
     }
 
-    public void updateProduct(ProductDto productDto, Integer productId) throws Exception {
+    public void updateProduct(String name, double price, String description, MultipartFile imageURL, Category category, Integer productId) throws Exception {
 
         if (!Files.exists(CURRENT_FOLDER.resolve(staticPath).resolve(imagePath))) {
             Files.createDirectories(CURRENT_FOLDER.resolve(staticPath).resolve(imagePath));
         }
         Path file = CURRENT_FOLDER.resolve(staticPath)
-                .resolve(imagePath).resolve(productDto.getImageURL().getOriginalFilename());
+                .resolve(imagePath).resolve(imageURL.getOriginalFilename());
         try (OutputStream os = Files.newOutputStream(file)) {
-            os.write(productDto.getImageURL().getBytes());
+            os.write(imageURL.getBytes());
         }
 
         Product product = productRepository.findById(productId).get();
-        product.setDescription(productDto.getDescription());
-        product.setImageURL(imagePath.resolve(productDto.getImageURL().getOriginalFilename()).toString());
-        product.setName(productDto.getName());
-        product.setPrice(productDto.getPrice());
+        product.setDescription(description);
+        product.setImageURL(imagePath.resolve(imageURL.getOriginalFilename()).toString());
+        product.setName(name);
+        product.setPrice(price);
+        product.setCategoryId(category);
         productRepository.save(product);
     }
 
@@ -83,4 +83,5 @@ public class ProductService {
         }
         return optionalProduct.get();
     }
+
 }
